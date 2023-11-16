@@ -4,10 +4,8 @@ Given that GoDaddy Payments recent launched we have limited data to train ML mod
 
 
 
-This is the complete description with all model artifact link to it
-https://secureservernet-my.sharepoint.com/:w:/g/personal/sgupta1_godaddy_com/EZ0qi1pIychNoJa1_aRPZWIBJ5RW4kITi5vagLTh2Ggf8A?e=Kh4ERM
+[This is the complete description with all model artifacts link to it](https://secureservernet-my.sharepoint.com/:w:/g/personal/sgupta1_godaddy_com/EZ0qi1pIychNoJa1_aRPZWIBJ5RW4kITi5vagLTh2Ggf8A?e=Kh4ERM)
 
 
-this is the deck for the LTV model
-https://secureservernet-my.sharepoint.com/:p:/g/personal/sgupta1_godaddy_com/EUIw88kKKNBEqSwumC0L2zMBJVgRKI87yqUHv4BmquuACA?e=sxqU49
+[This is the deck for the LTV model](https://secureservernet-my.sharepoint.com/:p:/g/personal/sgupta1_godaddy_com/EUIw88kKKNBEqSwumC0L2zMBJVgRKI87yqUHv4BmquuACA?e=sxqU49)
 
