@@ -1,4 +1,5 @@
-## this includes the sql queries 
+---We will use a table which has all the identified powerseller targets bi.ba_commerce.ps_data_jul_23  and bundle up industries in few major industries aligned with the sic_codes
+--- bi.ba_commerce.ps_data_jul_23 has collections of shopper_id with various attributes such as industry , gd products etc . The table also has cohort column which is used to categorize table samples with  model used and accuracy level. Population in cohort 5 is domain only shoppers hence are considerd as low confidence ML model results while rest other cohorts are clubbed together as high confidence ML model
 
 drop table if exists data;
 create temp table data as
@@ -10,10 +11,10 @@ case when coalesce(sic_major_group,industry,  industry2) = 'FARMING' then 'Agric
        when coalesce(sic_major_group,industry,  industry2) in ('AUTO_DEALERS','AUTO_SALES_ACCESSORIES_INFORMATIONAL') then 'Automotive Dealers and Gasoline Service Stations'
        when coalesce(sic_major_group,industry,  industry2) in ('AUTO_BODY_REPAIR','AUTO_CLEANING_DETAIL_WASH','AUTO_PARTS','AUTO_RELATED','AUTO_REPAIR', 'TOWING_SERVICES') then 'Automotive Repair, Services, and Parking'
        when coalesce(sic_major_group,industry,  industry2) in ('CONSTRUCTION','HOME_CONSTRUCTION_RELATED','HOME_CONTRACTORS') then 'Building Construction General Contractors and Operative Builders'
-       when coalesce(sic_major_group,industry,  industry2) in ('ART') then 'Building Materials, Hardware, Garden Supply, and Mobile Home Dealers'
+       when coalesce(sic_major_group,industry,  industry2) in ('ART') then 'Building Materials, Hardware, Garden Supply, and Mobile Home Dealers' 
        when coalesce(sic_major_group,industry,  industry2) in ('ADULT_ENTERTAINMENT','ADVERTISING','AERIAL_DRONE_PHOTOGRAPHY_VIDEOGRAPHY','ARTISTS','AUTO_SALES_SERVICE_ACCESSORIES','BLOGS','BOOKS_AND_BOOK_REVIEWS','BUSINESS_ADVERTISING','BUSINESS_GENERAL','BUSINESS_JANITORIAL_SERVICES','BUSINESS_SERVICES','CARDS_STATIONARY_PLAYING_TRADE','CAREER_COACHING_DEVELOPMENT','CLEANING_SERVICES','COMPUTER_RELATED','COMPUTER_SECURITY','CREDIT_DEBT_SOLUTIONS','CRYPTO_AND_CURRENCY_RELATED','EMPLOYMENT_STAFFING_RECRUITING','EVENTS','FINANCIAL_SERVICES','GAMES','GRAPHIC_DESIGN','HEALTH_CONSULTANT','HOME_CLEANING','HOME_INSPECTION','HOME_INTERIOR_DESIGN','HOME_RELATED','HOME_SERVICES','INFORMATION_LIFESTYLE','INFORMATION_RELATED','INFORMATION_TECHNOLOGY','INTERNET_MARKETING','IT_SERVICES','JOBS_RELATED','MEDIA','MEDIA_ARTS_PODCASTS_TORRENTS','MEDIA_RELATED','MODELS_TALENT','MUSIC_MUSICIANS_INSTRUMENTSTORES','MUSIC_PRODUCTION_SERVICES','NOTARIES','OUTDOOR_GEAR_ACTIVITIES','PARTY_RENTALS','PERSONAL','PERSONAL_ADMIN_ASSISISTANTS','PERSONAL_FAMILY','PERSONAL_PORTFOLIO_SHOWCASE_RELATED','PEST_CONTROL','PHONE_RELATED','PRIVATE_INVESTIGATORS','PROFESSIONAL','PROMOTIONAL_SERVICES','PSYCHIC_ASTROLOGY','PUBLIC_SPEAKING_MOTIVATIONAL','REAL_ESTATE','RETAIL_ECOMMERCE_RELATED','SCIENCE_TECHNOLOGY','SECURITY_SERVICES','SECURITY_SYSTEMS_PRODUCTS','SHOPPING_RELATED','SOFTWARE_APPLICATION_RELATED','VIDEO_GAMES','WEB_DESIGN') then 'Business Services'
        when coalesce(sic_major_group,industry,  industry2) in ('RADIO_AND_PODCASTS','TELECOM_RELATED') then 'Communications'
-       when coalesce(sic_major_group,industry,  industry2) in ('ELECTRICAL_ELECTRICIANS','HOME_PAINTERS_AND_SUPPLIES','HOME_REPAIR_AND REMODELING','HOME_ROOFING_COMPANIES','HVAC_PLUMBING_HEATING_RELATED','HVAC_PLUMBING_SERVICES','SOLAR_RELATED')
+       when coalesce(sic_major_group,industry,  industry2) in ('ELECTRICAL_ELECTRICIANS','HOME_PAINTERS_AND_SUPPLIES','HOME_REPAIR_AND REMODELING','HOME_ROOFING_COMPANIES','HVAC_PLUMBING_HEATING_RELATED','HVAC_PLUMBING_SERVICES','SOLAR_RELATED') 
        then 'Construction Special Trade Contractors'
        when coalesce(sic_major_group,industry,  industry2) in ('FINANCIAL_SERVICES_BANKS') then 'Depository Institutions'
        when coalesce(sic_major_group,industry,  industry2 ) in  ('COFFEE_TEA','FOOD','FOOD_CHEFS_CATERING','FOOD_DRINK_INFORMATIONAL','FOOD_RELATED','FOOD_TRUCKS','RESTAURANTS','RESTAURANTS_CAFE','RESTAURANTS_PIZZA')
@@ -48,7 +49,7 @@ when coalesce(sic_major_group,industry,  industry2) in ('FINANCIAL_LOANS','MORTG
 when coalesce(sic_major_group,industry,  industry2) in ('CLOTHES_TSHIRTS_PRINTING_EMBROIDERY','COPY_PRINTING_RELATED','MAGAZINES_NEWSPAPERS_PERIODICALS','PUBLISHING') then 'Printing, Publishing, and Allied Industries'
 when coalesce(sic_major_group,industry,  industry2) in ('CHILDCARE_RELATED','COUNSELING_THERAPY') then 'Social Services'
 when coalesce(sic_major_group,industry,  industry2) in ('LOGISTICS','TRAVEL','TRAVEL_RELATED') then 'Transportation Services'
-when coalesce(sic_major_group,industry,  industry2) in ('ELECTRONICS_RELATED','INDUSTRIAL_RELATED') then 'Wholesale Trade-Durable Goods'
+when coalesce(sic_major_group,industry,  industry2) in ('ELECTRONICS_RELATED','INDUSTRIAL_RELATED') then 'Wholesale Trade-Durable Goods' 
 when industry ilike 'Business Services' then 'Business Services'
 when industry = 'Miscellaneous Retail' then 'Miscellaneous Retail'
 when industry in  ('Health Services', 'Health/allied services') then 'Health Services'
@@ -63,9 +64,11 @@ when industry = 'Automotive Repair, Services, and Parking' then 'Automotive Repa
 when industry ilike  '%Dentist%' or industry ilike '%Chiropractor%' or industry ilike '%Health%' then 'Health Services'
 when industry = 'Agricultural Services' then 'Agricultural Services'
 else 'Other' end as Industry3
-from bi.ba_commerce.ps_data_jul_23  a; -- this is base table created by adding the all power seller identification models
+from bi.ba_commerce.ps_data_jul_23  a;
 
---select count(*) , sic_major_group from data group by 2;
+---using naics test results we will assigned industry specific avg GPV for all identified powersellers at shopper_id level
+-- we will assign model accuracy of 0.4 for cohort 5 aka (low confidence ML model) while all other cohort will be assigned accuracy of 0.7 as they all collectively form high confidence ML model
+--- we will add the propensity model score at shopper_id level as per the latest model run 
 
 drop table if exists GDP_pLTV_driver;
 create temp table GDP_pLTV_driver as
@@ -92,15 +95,29 @@ case when Industry3 =  'Wholesale Trade-Durable Goods' then 688970
     when Industry3 =  'Apparel and Accessory Stores' then 266533
     when Industry3 =  'Personal Services' then 258216
     else 250000 end as Avg_GPV,
-case when b.model_prediction_score is not null then b.model_prediction_score else 0 end as Propensity_score ,
+case when b.model_prediction_score is not null then b.model_prediction_score else 0 end as Propensity_score , 
 b.partition_prediction_run_pst_date as Model_prediction_date,
  Industry3
-from data a
+from data a 
 left join bi.ml_batch_predictions_cln_spectrum.customer_gd_payment_propensity_prediction_history_cln b
 on a.shopper_id = b.shopper_id
-and partition_prediction_run_pst_date in (select max(partition_prediction_run_pst_date)
+and partition_prediction_run_pst_date in (select max(partition_prediction_run_pst_date) 
                                           from bi.ml_batch_predictions_cln_spectrum.customer_gd_payment_propensity_prediction_history_cln)
 ;
+
+---using propensity model backtesting results for sales leads we assigned probabilty of conversion based on model deciles.
+
+--Decile propensity_score
+--0    0.000000e+00
+--1    1.033494e-28
+--2    1.953547e-16
+--3    5.479919e-12
+--4    1.294813e-09
+--5    8.342035e-08
+--6    2.880347e-06
+--7    6.446732e-05
+--8    6.358081e-04
+--9    3.766050e-03
 
 drop table if exists GDP_pLTV_driver2;
 create temp table GDP_pLTV_driver2 as
@@ -115,6 +132,8 @@ case when Propensity_score > 0.003766050 then 0.35
      else 0.0001 end as Prob_to_apply
 from GDP_pLTV_driver;
 
+--- we wrote all this data as GDP_pLTV_old as till here all the calculation is done for existing shopper_id as of July 2023
+-- finally the GD LTV is calculated using formula (Avg_GPV * Prob_to_apply * model_accuracy * 0.0254 * 3)
 
 drop table if exists GDP_pLTV_old;
 create temp table GDP_pLTV_old as
@@ -123,11 +142,11 @@ select shopper_id, Industry3,
 from GDP_pLTV_driver2
 ;
 
+-- As many new shoppers come to godaddy and apply for GD payments we used GCR as indication of powersellers. Any shopper who has GD payment propensity score in decile 9 (highest decile) and has GCR >$1000 USD but less than $30000 USD (this is done to remove investors) will be considered as PS with GPV potential of $100k (this is inline with Sales calculator used today in GD Payments)
+--Any shopper who has GD payment propensity score in decile 9 (highest decile) and has GCR <$1000 USD will be considered as Micromerchant with GPV potential of $10k (this is inline with Sales calculator used today in GD Payments)
+-- Any shopper for whom we do not have propensity score we will consider them to have $10k potential with 0.1% conversion chance (business approximation used)
+---rest will be considered as $0 for GD LTV
 
-
-
-
---select * from GDP_pLTV limit 500;
 
 
 drop table if exists GDP_pLTV_new;
@@ -136,28 +155,25 @@ select distinct a.shopper_id , total_gcr_usd_amt,
 case when (b.model_prediction_score > 0.003766050 and total_gcr_usd_amt > 1000 and total_gcr_usd_amt < 30000 )then (0.25 * 3 * 100000 * 0.0254)
     when (b.model_prediction_score > 0.003766050 and total_gcr_usd_amt < 1000  )then (0.25 * 3 * 10000 * 0.0254)
      when b.model_prediction_score is null then (0.001 * 3 * 10000 * 0.0254)
-     else 0 end as GDP_pLTV_new ,
+     else 0 end as GDP_pLTV_new , 
 b.partition_prediction_run_pst_date as Model_prediction_date
-from bi.dna_approved.shopper_360_current a
+from bi.dna_approved.shopper_360_current a 
 left join bi.ml_batch_predictions_cln_spectrum.customer_gd_payment_propensity_prediction_history_cln b
 on a.shopper_id = b.shopper_id
-and partition_prediction_run_pst_date in (select max(partition_prediction_run_pst_date)
+and partition_prediction_run_pst_date in (select max(partition_prediction_run_pst_date) 
                                           from bi.ml_batch_predictions_cln_spectrum.customer_gd_payment_propensity_prediction_history_cln)
-where acq_report_region_2_name = 'United States'
+where acq_report_region_2_name = 'United States' 
 and a.shopper_status = 'Active' ;
 
 
---select * from GDP_pLTV_new limit 500;
+-- both the LTV for new and old shoppers are added and written in a single table bi.ba_commerce.GDP_pLTV which will be used for all analytical purposes
 
 drop table if exists bi.ba_commerce.GDP_pLTV;
 create  table bi.ba_commerce.GDP_pLTV as
 select a.shopper_id,
 case when pLTV_old > 0 then pLTV_old else GDP_pLTV_new  end as pLTV,
 b.Industry3 as Industry,
-a.total_gcr_usd_amt as Lifetime_GCR
-from GDP_pLTV_new a
-left join  GDP_pLTV_old b
+a.total_gcr_usd_amt as Lifetime_GCR 
+from GDP_pLTV_new a 
+left join  GDP_pLTV_old b 
 on a.shopper_id = b.shopper_id;
-
-
-select * from bi.ba_commerce.GDP_pLTV limit 5000;
