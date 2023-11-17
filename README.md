@@ -10,17 +10,17 @@ The development of the model involved utilizing a comprehensive NAICS dataset co
 
 Models used in the GoDaddy Payment LTV model 
 
-Industry Classification ML Model 
+1. [Industry Classification ML Model](https://godaddy-corp.atlassian.net/wiki/spaces/DATAGOVCON/pages/3284467782/Industry+Classification+Model+Review+Basic+Tier) 
 
-PowerSeller Identification ML Model 
+2. [PowerSeller Identification ML Model](https://github.com/gdcorp-dna/gdml-models-powerseller-identification) 
 
-GD Payments Propensity Model 
-
- 
+3. [GD Payments Propensity Model](https://godaddy-corp.atlassian.net/wiki/spaces/CTOPLAT/pages/3282715473/Powerseller+Payment+Model+Card) 
 
  
 
-**GDP LTV =     PS Avg Sales for Industry  
+ 
+
+GDP LTV =     PS Avg Sales for Industry  
 
           x PS Identification Probability  
 
@@ -28,7 +28,7 @@ GD Payments Propensity Model
 
           x Take Rate 
 
-          x Avg customer duration** 
+          x Avg customer duration
 
  
 
@@ -42,9 +42,9 @@ GD Payments Propensity Model
 
  
 
-High confidence Model:  PowerSeller Shopper_ids who have GD domains and these domains are attached to a website which we can scrub via Data Provider 
+a. High confidence Model:  PowerSeller Shopper_ids who have GD domains and these domains are attached to a website which we can scrub via Data Provider 
 
-Low confidence Model: PowerSeller Shopper_ids who have GD domains and these domains are not attached to a website which we can scrub via Data Provider 
+b. Low confidence Model: PowerSeller Shopper_ids who have GD domains and these domains are not attached to a website which we can scrub via Data Provider 
 
  
 
@@ -66,15 +66,15 @@ This result is dynamic and will change weekly.
 
  
 
-New to GoDaddy Shoppers 
+**New to GoDaddy Shoppers** 
 
 For the merchants who were too new for our ML models we will use GCR as PowerSeller identification 
 
-Shoppers with GCR <$1000 and in highest decile of propensity to convert will be assumed to be a micromerchant with GPV potential of $10k 
+a. Shoppers with GCR <$1000 and in highest decile of propensity to convert will be assumed to be a micromerchant with GPV potential of $10k 
 
-Shoppers with GCR >$1000 and in highest decile of propensity to convert will be assumed to be a PowerSellers with GPV potential of $100k 
+b. Shoppers with GCR >$1000 and in highest decile of propensity to convert will be assumed to be a PowerSellers with GPV potential of $100k 
 
-Rest will be considered as $0 GPV potential  
+c. Rest will be considered as $0 GPV potential  
 
  
 
