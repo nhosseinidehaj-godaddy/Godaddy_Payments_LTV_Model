@@ -22,13 +22,13 @@ Models used in the GoDaddy Payment LTV model
 
 GDP LTV =     PS Avg Sales for Industry  
 
-          x PS Identification Probability  
+          &times; PS Identification Probability  
 
-          x Probability to convert  
+          &times; Probability to convert  
 
-          x Take Rate 
+          &times; Take Rate 
 
-          x Avg customer duration
+          &times; Avg customer duration
 
  
 
